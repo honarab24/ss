@@ -1,5 +1,0 @@
-#EXTM3U
-#KODIPROP:inputstream.adaptive.license_type=org.w3.clearkey
-#KODIPROP:inputstream.adaptive.license_key=https://starofvenus.dpdns.org/license/gma7
-#EXTINF:-1 tvg-id="gma7ph2" tvg-name="GMA 7 (CON02)" tvg-logo="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSFZvR-WBx9by7ekFRW0YnNf7DBTUH4_MRzWQ&usqp=CAU" group-title="🇵🇭 PHILIPPINES CHANNEL", GMA 7 (s2)
-https://starofvenus.dpdns.org/channel/gma7.mpd
