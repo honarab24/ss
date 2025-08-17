@@ -11,7 +11,7 @@ const clearkey = {
   keys: [
     {
       kty: "oct",
-      kid: "MTYyMTg0ODMwMTIwMzkxOA==", // Base64 of 31363231383438333031323033393138
+      kid: "MTYyMTg0ODMwMTIwMzkxOA", // Base64 of 31363231383438333031323033393138
       k: "OGk0Mk1UNHgx a3RVdTQ3"       // Base64 of 38694e34324d543478316b7455753437
     }
   ]
