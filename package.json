@@ -1,7 +1,7 @@
 {
-  "name": "video-proxy-server",
+  "name": "mpd-proxy-server",
   "version": "1.0.0",
-  "description": "Generic MPEG-DASH/HLS pass-through proxy for video players with fixed /channel endpoint",
+  "description": "Proxy server to restream MPD manifests and segment files for VLC/browser playback",
   "main": "server.js",
   "type": "module",
   "scripts": {
@@ -9,9 +9,7 @@
     "dev": "nodemon server.js"
   },
   "dependencies": {
-    "compression": "^1.7.4",
     "express": "^4.19.2",
-    "express-rate-limit": "^7.3.1",
     "node-fetch": "^3.3.2"
   },
   "devDependencies": {
@@ -21,12 +19,12 @@
     "node": ">=18"
   },
   "keywords": [
-    "mpeg-dash",
-    "hls",
+    "mpd",
+    "dash",
     "proxy",
     "express",
-    "video",
-    "channel"
+    "vlc",
+    "restream"
   ],
   "author": "",
   "license": "MIT"
