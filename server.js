@@ -1,67 +1,48 @@
 import express from "express";
 import fetch from "node-fetch";
+import fs from "fs";
+import { xsltProcess, xmlParse } from "xslt-processor";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Proxy MPD manifest
+// Load XSLT stylesheet once
+const xsltData = fs.readFileSync("./mpd2hls.xsl", "utf8");
+const xsltDoc = xmlParse(xsltData);
+
+// Proxy endpoint
 app.get("/proxy", async (req, res) => {
+  const mpdUrl = req.query.u;
+  if (!mpdUrl) {
+    return res.status(400).send("Missing ?u=mpd_url");
+  }
+
   try {
-    const targetUrl = req.query.u;
-    if (!targetUrl) return res.status(400).send("Missing ?u= parameter");
+    // Fetch MPD XML
+    const response = await fetch(mpdUrl);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch MPD: ${response.statusText}`);
+    }
+    const mpdText = await response.text();
 
-    const response = await fetch(targetUrl);
-    if (!response.ok) return res.status(response.status).send("Source error");
+    // Transform MPD -> M3U8 using XSLT
+    const mpdDoc = xmlParse(mpdText);
+    const m3u8Text = xsltProcess(mpdDoc, xsltDoc, ["run_id", "stream"]);
 
-    let body = await response.text();
-
-    // Rewrite <BaseURL> so VLC requests segments through our /segment route
-    body = body.replace(/<BaseURL>(.*?)<\/BaseURL>/g, (_, url) => {
-      const absUrl = new URL(url, targetUrl).href;
-      return `<BaseURL>https://${req.get("host")}/segment?u=${encodeURIComponent(absUrl)}</BaseURL>`;
-    });
-
-    // Also rewrite SegmentTemplate (if used instead of BaseURL)
-    body = body.replace(/media="([^"]+)"/g, (_, url) => {
-      const absUrl = new URL(url, targetUrl).href;
-      return `media="https://${req.get("host")}/segment?u=${encodeURIComponent(absUrl)}"`;
-    });
-
-    res.setHeader("Content-Type", "application/dash+xml");
-    res.send(body);
+    res.set("Content-Type", "application/vnd.apple.mpegurl");
+    res.send(m3u8Text);
   } catch (err) {
-    console.error("Proxy error:", err);
-    res.status(500).send("Proxy error");
+    console.error("Error processing MPD:", err);
+    res.status(500).send("Error processing MPD");
   }
 });
 
-// Proxy media segments
-app.get("/segment", async (req, res) => {
-  try {
-    const targetUrl = req.query.u;
-    if (!targetUrl) return res.status(400).send("Missing ?u= parameter");
-
-    const response = await fetch(targetUrl, {
-      headers: { "User-Agent": req.get("user-agent") || "VLC" },
-    });
-    if (!response.ok) return res.status(response.status).send("Segment error");
-
-    // Pass through important headers for VLC
-    res.setHeader("Content-Type", response.headers.get("content-type") || "application/octet-stream");
-    if (response.headers.get("accept-ranges")) {
-      res.setHeader("Accept-Ranges", response.headers.get("accept-ranges"));
-    }
-    if (response.headers.get("content-length")) {
-      res.setHeader("Content-Length", response.headers.get("content-length"));
-    }
-
-    response.body.pipe(res);
-  } catch (err) {
-    console.error("Segment error:", err);
-    res.status(500).send("Segment proxy error");
-  }
+// Root info
+app.get("/", (req, res) => {
+  res.send("MPEG-DASH → HLS Proxy is running. Use /proxy?u=MPD_URL");
 });
 
+// Start server
 app.listen(PORT, () => {
-  console.log(`✅ VLC proxy server running at http://localhost:${PORT}`);
+  console.log(`✅ Server running on http://localhost:${PORT}`);
 });
