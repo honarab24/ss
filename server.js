@@ -141,7 +141,7 @@ app.all("/proxy", async (req, res) => {
 // Example usage:
 //   BASE_URL=https://example.com/dash  -> GET /base/manifest.mpd
 const BASE_URL = process.env.BASE_URL || "";
-import { URL } from "http://136.239.159.18:6610/001/2/ch00000090990000001093/manifest.mpd?AuthInfo=DvftfiQOMAT%2Fl3VKz%2F6TxorYbnegGQcVSa4v7mOKzojA5L43DLuqa4gGxA71OWYhBl0kLG1MjLMhEVrkZmBvUA%3D%3D&version=v1.0&BreakPoint=0&virtualDomain=001.live_hls.zte.com&programid=ch00000000000000001415&contentid=ch00000000000000001415&videoid=ch00000090990000001179&recommendtype=0&userid=0020230859495&boid=001&stbid=02:00:00:00:00:00&terminalflag=1&profilecode=&usersessionid=526239246&NeedJITP=1&JITPMediaType=DASH&JITPDRMType=Widevine&RateLow=1280000&RateHigh=25600000&IASHttpSessionId=OTT000020240723233153072050&ispcode=55";
+import { URL } from "http://143.44.136.111:6610/001/2/ch00000090990000001088/manifest.mpd?virtualDomain=001.live_hls.zte.com";
 
 app.get("/base/*", async (req, res) => {
   if (!BASE_URL) return res.status(400).json({ error: "BASE_URL not configured" });
