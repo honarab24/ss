@@ -1,0 +1,3 @@
+#EXTM3U
+#EXTINF:-1 tvg-id="jeepney" tvg-name="JEEPNEY TV" tvg-logo="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRscAGnyN9WU5Wjn_9-Dnsnj6a9O22SsOv8GQ&s" group-title="🇵🇭 PHILIPPINES CHANNEL",JEEPNEY TV
+https://starofvenus.dpdns.org/channel/manifest.mpd?virtualDomain=001.live_hls.zte.com
