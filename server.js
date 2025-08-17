@@ -18,8 +18,8 @@ const clearkey = {
   ]
 };
 
-// 📺 Proxy MPD stream
-app.get("/channel/gma7", async (req, res) => {
+// 📺 Proxy MPD stream at /channel/gma7.mpd
+app.get("/channel/gma7.mpd", async (req, res) => {
   try {
     const response = await fetch(MPD_URL);
     const body = await response.text();
@@ -31,7 +31,7 @@ app.get("/channel/gma7", async (req, res) => {
   }
 });
 
-// 🔑 Serve ClearKey license
+// 🔑 Serve ClearKey license at /license/gma7
 app.get("/license/gma7", (req, res) => {
   res.json(clearkey);
 });
