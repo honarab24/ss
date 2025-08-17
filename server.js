@@ -6,7 +6,7 @@ const app = express();
 
 // Base URL of your channel
 const BASE_URL =
-  "http://143.44.136.110:6610/001/2/ch00000090990000001179/";
+  "http://143.44.136.110:6610/001/2/ch00000090990000001179/manifest.mpd?virtualDomain=001.live_hls.zte.com";
 
 // ✅ Proxy everything (manifest + segments)
 app.get("/channel/*", async (req, res) => {
