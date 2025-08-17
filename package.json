@@ -1,35 +1,18 @@
 {
-  "name": "iptv-clearkey-proxy",
+  "name": "legal-dash-proxy",
   "version": "1.0.0",
-  "description": "IPTV Express.js ClearKey Proxy + License Server",
+  "description": "Generic pass-through proxy for MPEG-DASH/HLS when you have the rights to the content.",
   "type": "module",
-  "main": "index.js",
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js"
+    "start": "node server.js"
   },
   "dependencies": {
     "compression": "^1.7.4",
     "express": "^4.19.2",
-    "helmet": "^7.2.0",
-    "morgan": "^1.10.0",
+    "express-rate-limit": "^7.4.0",
     "node-fetch": "^3.3.2"
-  },
-  "devDependencies": {
-    "nodemon": "^3.1.0"
-  },
-  "engines": {
-    "node": ">=18"
-  },
-  "keywords": [
-    "iptv",
-    "express",
-    "dash",
-    "clearkey",
-    "drm",
-    "proxy",
-    "widevine"
-  ],
-  "author": "Team Friendly",
-  "license": "MIT"
+  }
 }
