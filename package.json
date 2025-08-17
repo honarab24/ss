@@ -1,18 +1,32 @@
 {
-  "name": "legal-dash-proxy",
+  "name": "video-proxy-server",
   "version": "1.0.0",
-  "description": "Generic pass-through proxy for MPEG-DASH/HLS when you have the rights to the content.",
+  "description": "Generic MPEG-DASH/HLS pass-through proxy for video players",
+  "main": "server.js",
   "type": "module",
-  "engines": {
-    "node": ">=18"
-  },
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "dev": "NODE_ENV=development nodemon server.js"
   },
   "dependencies": {
     "compression": "^1.7.4",
     "express": "^4.19.2",
-    "express-rate-limit": "^7.4.0",
+    "express-rate-limit": "^7.3.1",
     "node-fetch": "^3.3.2"
-  }
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "mpeg-dash",
+    "hls",
+    "proxy",
+    "express",
+    "video"
+  ],
+  "author": "",
+  "license": "MIT"
 }
