@@ -4,20 +4,20 @@ import fetch from "node-fetch";
 
 const app = express();
 
-// Base URL of your channel
-const BASE_URL =
-  "http://143.44.136.110:6610/001/2/ch00000090990000001179/manifest.mpd?virtualDomain=001.live_hls.zte.com";
-
-// ✅ Proxy everything (manifest + segments)
-app.get("/channel/*", async (req, res) => {
+/**
+ * Generic proxy for MPD + all segments
+ * Usage:
+ *   https://your-app.onrender.com/proxy?u=<full-mpd-url>
+ */
+app.get("/proxy", async (req, res) => {
   try {
-    // Append the requested path after /channel/
-    const targetPath = req.params[0]; 
-    const targetUrl = BASE_URL + targetPath + (req._parsedUrl.search || ""); 
+    const targetUrl = req.query.u;
+    if (!targetUrl) {
+      return res.status(400).send("Missing ?u=<url>");
+    }
 
     console.log("Proxying:", targetUrl);
 
-    // Forward headers including Range for streaming
     const response = await fetch(targetUrl, {
       headers: {
         Range: req.headers.range || "",
@@ -25,13 +25,12 @@ app.get("/channel/*", async (req, res) => {
       },
     });
 
-    // Mirror status and headers
     res.status(response.status);
     response.headers.forEach((value, key) => {
       res.setHeader(key, value);
     });
 
-    // Pipe stream to client (VLC or browser)
+    // Stream back
     response.body.pipe(res);
   } catch (err) {
     console.error("Proxy error:", err);
@@ -39,6 +38,38 @@ app.get("/channel/*", async (req, res) => {
   }
 });
 
+/**
+ * Catch-all proxy for segments when using relative paths
+ * Example: MPD refers to "chunk.m4s" → this will resolve and fetch it
+ */
+app.get("/segment", async (req, res) => {
+  try {
+    const targetUrl = req.query.u;
+    if (!targetUrl) {
+      return res.status(400).send("Missing ?u=<url>");
+    }
+
+    console.log("Proxying segment:", targetUrl);
+
+    const response = await fetch(targetUrl, {
+      headers: {
+        Range: req.headers.range || "",
+        "User-Agent": req.headers["user-agent"] || "Mozilla/5.0",
+      },
+    });
+
+    res.status(response.status);
+    response.headers.forEach((value, key) => {
+      res.setHeader(key, value);
+    });
+
+    response.body.pipe(res);
+  } catch (err) {
+    console.error("Segment proxy error:", err);
+    res.status(500).send("Segment proxy error: " + err.message);
+  }
+});
+
 app.listen(3000, () => {
-  console.log("✅ Proxy server running at http://localhost:3000/channel/");
+  console.log("✅ Proxy server running at http://localhost:3000/proxy?u=<url>");
 });
