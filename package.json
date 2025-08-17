@@ -1,12 +1,12 @@
 {
   "name": "video-proxy-server",
   "version": "1.0.0",
-  "description": "Generic MPEG-DASH/HLS pass-through proxy for video players",
+  "description": "Generic MPEG-DASH/HLS pass-through proxy for video players with fixed /channel endpoint",
   "main": "server.js",
   "type": "module",
   "scripts": {
     "start": "node server.js",
-    "dev": "NODE_ENV=development nodemon server.js"
+    "dev": "nodemon server.js"
   },
   "dependencies": {
     "compression": "^1.7.4",
@@ -25,7 +25,8 @@
     "hls",
     "proxy",
     "express",
-    "video"
+    "video",
+    "channel"
   ],
   "author": "",
   "license": "MIT"
