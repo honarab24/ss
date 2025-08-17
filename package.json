@@ -1,14 +1,35 @@
 {
-  "name": "iptv-clearkey-server",
+  "name": "iptv-clearkey-proxy",
   "version": "1.0.0",
-  "description": "Restream MPD with ClearKey DRM support on Render",
-  "main": "server.js",
+  "description": "IPTV Express.js ClearKey Proxy + License Server",
   "type": "module",
+  "main": "index.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node index.js",
+    "dev": "nodemon index.js"
   },
   "dependencies": {
-    "express": "^4.18.2",
+    "compression": "^1.7.4",
+    "express": "^4.19.2",
+    "helmet": "^7.2.0",
+    "morgan": "^1.10.0",
     "node-fetch": "^3.3.2"
-  }
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "iptv",
+    "express",
+    "dash",
+    "clearkey",
+    "drm",
+    "proxy",
+    "widevine"
+  ],
+  "author": "Team Friendly",
+  "license": "MIT"
 }
