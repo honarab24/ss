@@ -1,75 +1,61 @@
-// server.js
 import express from "express";
 import fetch from "node-fetch";
 
 const app = express();
+const PORT = process.env.PORT || 3000;
 
 /**
- * Generic proxy for MPD + all segments
- * Usage:
- *   https://your-app.onrender.com/proxy?u=<full-mpd-url>
+ * Proxy route for MPD files
+ * Example: /proxy?u=http://143.44.136.110:6610/.../manifest.mpd
  */
 app.get("/proxy", async (req, res) => {
   try {
     const targetUrl = req.query.u;
-    if (!targetUrl) {
-      return res.status(400).send("Missing ?u=<url>");
-    }
+    if (!targetUrl) return res.status(400).send("Missing ?u= parameter");
 
-    console.log("Proxying:", targetUrl);
+    const response = await fetch(targetUrl);
+    if (!response.ok) return res.status(response.status).send("Source error");
 
-    const response = await fetch(targetUrl, {
-      headers: {
-        Range: req.headers.range || "",
-        "User-Agent": req.headers["user-agent"] || "Mozilla/5.0",
-      },
-    });
+    let body = await response.text();
 
-    res.status(response.status);
-    response.headers.forEach((value, key) => {
-      res.setHeader(key, value);
-    });
+    // Rewrite BaseURL so segments go through /segment
+    body = body.replace(
+      /<BaseURL>(.*?)<\/BaseURL>/g,
+      (_, url) =>
+        `<BaseURL>https://${req.get("host")}/segment?u=${new URL(url, targetUrl).href}</BaseURL>`
+    );
 
-    // Stream back
-    response.body.pipe(res);
+    res.setHeader("Content-Type", "application/dash+xml");
+    res.send(body);
   } catch (err) {
     console.error("Proxy error:", err);
-    res.status(500).send("Proxy error: " + err.message);
+    res.status(500).send("Proxy error");
   }
 });
 
 /**
- * Catch-all proxy for segments when using relative paths
- * Example: MPD refers to "chunk.m4s" → this will resolve and fetch it
+ * Proxy route for media segments (m4s, ts, mp4, etc.)
+ * Example: /segment?u=http://143.44.136.110:6610/.../chunk.m4s
  */
 app.get("/segment", async (req, res) => {
   try {
     const targetUrl = req.query.u;
-    if (!targetUrl) {
-      return res.status(400).send("Missing ?u=<url>");
-    }
+    if (!targetUrl) return res.status(400).send("Missing ?u= parameter");
 
-    console.log("Proxying segment:", targetUrl);
+    const response = await fetch(targetUrl);
+    if (!response.ok) return res.status(response.status).send("Segment error");
 
-    const response = await fetch(targetUrl, {
-      headers: {
-        Range: req.headers.range || "",
-        "User-Agent": req.headers["user-agent"] || "Mozilla/5.0",
-      },
-    });
+    // Pipe headers
+    res.setHeader("Content-Type", response.headers.get("content-type") || "application/octet-stream");
 
-    res.status(response.status);
-    response.headers.forEach((value, key) => {
-      res.setHeader(key, value);
-    });
-
+    // Stream the data
     response.body.pipe(res);
   } catch (err) {
-    console.error("Segment proxy error:", err);
-    res.status(500).send("Segment proxy error: " + err.message);
+    console.error("Segment error:", err);
+    res.status(500).send("Segment proxy error");
   }
 });
 
-app.listen(3000, () => {
-  console.log("✅ Proxy server running at http://localhost:3000/proxy?u=<url>");
+app.listen(PORT, () => {
+  console.log(`✅ Proxy server running on http://localhost:${PORT}`);
 });
