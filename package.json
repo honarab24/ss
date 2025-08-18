@@ -1,15 +1,31 @@
 {
-  "name": "mpd-proxy",
+  "name": "starofvenus",
   "version": "1.0.0",
-  "description": "DASH MPD to HLS proxy with inline XSL transformation",
+  "description": "starofvenus - Express server with Shaka Player frontend for IPTV streaming",
   "main": "server.js",
-  "type": "module",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "dev": "nodemon server.js"
   },
+  "keywords": [
+    "iptv",
+    "shaka-player",
+    "express",
+    "hls",
+    "dash",
+    "streaming"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "^4.19.2",
-    "node-fetch": "^3.3.2",
-    "xslt-processor": "^0.11.1"
+    "request": "^2.88.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
   }
 }
