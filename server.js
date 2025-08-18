@@ -12,7 +12,7 @@ app.use(cors());
 const streams = {
  
  gma7: 'http://143.44.136.110:6610/001/2/ch00000090990000001093/sec-f1-v1-a1.m3u8?usersessionid=&IASHttpSessionId=OTT2388020250818020007000282&m3u8_level=2&ztecid=ch00000090990000001093&virtualDomain=001.live_hls.zte.com&ispcode=55', 
-  cinemo_ph: 'https://d1bail49udbz1k.cloudfront.net/out/v1/78e282e04f0944f3ad0aa1db7a1be645/index_3.m3u8',
+  cinemoph: 'http://143.44.136.110:6610/001/2/ch00000090990000001254/sec-f1-v1-a1.m3u8?usersessionid=&IASHttpSessionId=OTT2339620250818035221000307&m3u8_level=2&ztecid=ch00000090990000001254&virtualDomain=001.live_hls.zte.com&ispcode=55',
   kapamilyachannelHD: 'http://143.44.136.110:6610/001/2/ch00000090990000001286/sec-f1-v1-a1.m3u8?usersessionid=&IASHttpSessionId=OTT2442320250818031101000309&m3u8_level=2&ztecid=ch00000090990000001286&virtualDomain=001.live_hls.zte.com&ispcode=55',
   gtv: 'http://143.44.136.110:6610/001/2/ch00000090990000001143/sec-f1-v1-a1.m3u8?usersessionid=&IASHttpSessionId=OTT2330520250818033205000291&m3u8_level=2&ztecid=ch00000090990000001143&virtualDomain=001.live_hls.zte.com&ispcode=55',
 
@@ -155,35 +155,51 @@ app.get('/', (req, res) => {
         </div>
       </main>
 
-      <script>
-        const manifestBase = window.location.origin;
+<script>
+  const manifestBase = window.location.origin;
 
-        async function initPlayer() {
-          if (shaka.Player.isBrowserSupported()) {
-            window.player = new shaka.Player(document.getElementById('video'));
-            player.addEventListener('error', onError);
-          } else {
-            alert('Browser not supported!');
-          }
+  async function initPlayer() {
+    if (shaka.Player.isBrowserSupported()) {
+      window.player = new shaka.Player(document.getElementById('video'));
+      player.addEventListener('error', onError);
+
+      // ✅ Auto-play the first channel on load
+      const firstChannel = Object.keys(${JSON.stringify(Object.keys(streams))})[0];
+      loadChannel(firstChannel, true);
+    } else {
+      alert('Browser not supported!');
+    }
+  }
+
+  async function loadChannel(name, autoplay = false) {
+    const url = `${manifestBase}/${name}/playlist.m3u8`;
+    try {
+      await player.load(url);
+      console.log('Now playing:', name);
+
+      const video = document.getElementById('video');
+      if (autoplay) {
+        // ✅ Force muted autoplay (works on mobile too)
+        video.muted = true;
+        const playPromise = video.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(() => {
+            console.warn('Autoplay blocked. User interaction required.');
+          });
         }
+      }
+    } catch (e) {
+      onError(e);
+    }
+  }
 
-        async function loadChannel(name) {
-          const url = \`\${manifestBase}/\${name}/playlist.m3u8\`;
-          try {
-            await player.load(url);
-            console.log('Now playing:', name);
-          } catch (e) {
-            onError(e);
-          }
-        }
+  function onError(e) {
+    console.error('Error loading stream:', e);
+    alert('⚠️ Failed to load stream.');
+  }
 
-        function onError(e) {
-          console.error('Error loading stream:', e);
-          alert('⚠️ Failed to load stream.');
-        }
-
-        document.addEventListener('DOMContentLoaded', initPlayer);
-      </script>
+  document.addEventListener('DOMContentLoaded', initPlayer);
+</script>
     </body>
     </html>
   `);
