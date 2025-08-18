@@ -1,21 +1,13 @@
 {
-  "name": "starofvenus",
+  "name": "stream-proxy",
   "version": "1.0.0",
-  "description": "starofvenus - Express server with Shaka Player frontend for IPTV streaming",
+  "description": "Express server to proxy IPTV streams (.m3u8 and .ts segments).",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js"
   },
-  "keywords": [
-    "iptv",
-    "shaka-player",
-    "express",
-    "hls",
-    "dash",
-    "streaming"
-  ],
-  "author": "Your Name",
+  "author": "",
   "license": "MIT",
   "dependencies": {
     "cors": "^2.8.5",
@@ -24,8 +16,5 @@
   },
   "devDependencies": {
     "nodemon": "^3.1.0"
-  },
-  "engines": {
-    "node": ">=16.0.0"
   }
 }
