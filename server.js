@@ -10,12 +10,10 @@ app.use(cors());
 
 // ✅ Stream channel map (key: name, value: m3u8 URL)
 const streams = {
- 
- gma7: 'http://143.44.136.110:6610/001/2/ch00000090990000001093/sec-f1-v1-a1.m3u8?usersessionid=&IASHttpSessionId=OTT2388020250818020007000282&m3u8_level=2&ztecid=ch00000090990000001093&virtualDomain=001.live_hls.zte.com&ispcode=55', 
+  gma7: 'http://143.44.136.110:6610/001/2/ch00000090990000001093/sec-f1-v1-a1.m3u8?usersessionid=&IASHttpSessionId=OTT2388020250818020007000282&m3u8_level=2&ztecid=ch00000090990000001093&virtualDomain=001.live_hls.zte.com&ispcode=55',
   cinemo_ph: 'http://143.44.136.110:6610/001/2/ch00000090990000001254/sec-f1-v1-a1.m3u8?usersessionid=&IASHttpSessionId=OTT2339620250818035221000307&m3u8_level=2&ztecid=ch00000090990000001254&virtualDomain=001.live_hls.zte.com&ispcode=55',
   kapamilyachannelHD: 'http://143.44.136.110:6610/001/2/ch00000090990000001286/sec-f1-v1-a1.m3u8?usersessionid=&IASHttpSessionId=OTT2442320250818031101000309&m3u8_level=2&ztecid=ch00000090990000001286&virtualDomain=001.live_hls.zte.com&ispcode=55',
   gtv: 'http://143.44.136.110:6610/001/2/ch00000090990000001143/sec-f1-v1-a1.m3u8?usersessionid=&IASHttpSessionId=OTT2330520250818033205000291&m3u8_level=2&ztecid=ch00000090990000001143&virtualDomain=001.live_hls.zte.com&ispcode=55',
-
 };
 
 // 🎬 Proxy for .m3u8 playlist
@@ -55,155 +53,6 @@ app.get('/segment.ts', (req, res) => {
     .on('response', (r) => res.set(r.headers))
     .on('error', () => res.status(502).send('❌ Segment failed'))
     .pipe(res);
-});
-
-// 🏠 Homepage: Shaka Player with autoplay
-app.get('/', (req, res) => {
-  const channelButtons = Object.keys(streams)
-    .map(
-      name => `<button onclick="loadChannel('${name}')">${name.toUpperCase()}</button>`
-    )
-    .join('');
-
-  res.send(`
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-      <meta charset="UTF-8" />
-      <meta name="viewport" content="width=device-width, initial-scale=1" />
-      <title>⭐ Star Of Venus ⭐</title>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.9.2/shaka-player.compiled.js"></script>
-      <style>
-        body {
-          margin: 0;
-          font-family: Arial, sans-serif;
-          background: #000;
-          color: #fff;
-          display: flex;
-          flex-direction: column;
-          height: 100vh;
-        }
-        header {
-          text-align: center;
-          padding: 12px;
-          background: #111;
-          color: #f9c80e;
-          font-size: 1.5em;
-          font-weight: bold;
-        }
-        main {
-          flex: 1;
-          display: flex;
-          overflow: hidden;
-        }
-        #channels {
-          width: 200px;
-          background: #111;
-          padding: 10px;
-          overflow-y: auto;
-        }
-        #channels button {
-          width: 100%;
-          padding: 10px;
-          margin: 6px 0;
-          background: #222;
-          color: #61dafb;
-          border: none;
-          border-radius: 6px;
-          cursor: pointer;
-          font-size: 1em;
-          transition: background 0.2s;
-        }
-        #channels button:hover {
-          background: #333;
-        }
-        #player-container {
-          flex: 1;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          background: #000;
-          position: relative;
-        }
-        video {
-          width: 100%;
-          height: 100%;
-          background: #000;
-        }
-        @media (max-width: 768px) {
-          main {
-            flex-direction: column;
-          }
-          #channels {
-            width: 100%;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-          }
-          #channels button {
-            flex: 1 0 45%;
-            margin: 5px;
-          }
-        }
-      </style>
-    </head>
-    <body>
-      <header>⭐ Star Of Venus ⭐</header>
-      <main>
-        <div id="channels">${channelButtons}</div>
-        <div id="player-container">
-          <video id="video" controls autoplay playsinline muted></video>
-        </div>
-      </main>
-
-      <script>
-        const manifestBase = window.location.origin;
-        const channels = ${JSON.stringify(Object.keys(streams))};
-
-        async function initPlayer() {
-          if (shaka.Player.isBrowserSupported()) {
-            window.player = new shaka.Player(document.getElementById('video'));
-            player.addEventListener('error', onError);
-
-            // ✅ Auto-play the first channel
-            const firstChannel = channels[0];
-            loadChannel(firstChannel, true);
-          } else {
-            alert('Browser not supported!');
-          }
-        }
-
-        async function loadChannel(name, autoplay = false) {
-          const url = \`\${manifestBase}/\${name}/playlist.m3u8\`;
-          try {
-            await player.load(url);
-            console.log('Now playing:', name);
-
-            const video = document.getElementById('video');
-            if (autoplay) {
-              video.muted = true; // ✅ ensures autoplay works
-              const playPromise = video.play();
-              if (playPromise !== undefined) {
-                playPromise.catch(() => {
-                  console.warn('Autoplay blocked. User interaction required.');
-                });
-              }
-            }
-          } catch (e) {
-            onError(e);
-          }
-        }
-
-        function onError(e) {
-          console.error('Error loading stream:', e);
-          alert('⚠️ Failed to load stream.');
-        }
-
-        document.addEventListener('DOMContentLoaded', initPlayer);
-      </script>
-    </body>
-    </html>
-  `);
 });
 
 // 🚀 Launch the server
