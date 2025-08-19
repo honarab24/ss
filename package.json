@@ -1,20 +1,30 @@
 {
-  "name": "stream-proxy",
+  "name": "iptv-proxy",
   "version": "1.0.0",
-  "description": "Express server to proxy IPTV streams (.m3u8 and .ts segments).",
+  "description": "Secure IPTV proxy server with playlist and segment rewriting",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js"
   },
-  "author": "",
+  "keywords": [
+    "iptv",
+    "proxy",
+    "hls",
+    "m3u8",
+    "video-streaming"
+  ],
+  "author": "Your Name",
   "license": "MIT",
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.19.2",
-    "request": "^2.88.2"
+    "node-fetch": "^2.7.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.0"
+  },
+  "engines": {
+    "node": ">=14"
   }
 }
